@@ -63,7 +63,7 @@ VKads.Data=(account as text, reportType as text, start as text, end as text, opt
 let 
 method = if reportType = "campaigns" then "Campaigns" else if reportType = "ads" then "Ads" else "",
 gott = if client = null then [] else [#"client_id"=client], 
-gett = [#"account_id"=account,  #"access_token"=Extension.CurrentCredential()[Key], #"v"="5.107"]&gott,
+gett = [#"account_id"=account,  #"access_token"=Extension.CurrentCredential()[Key], #"v"="5.130"]&gott,
 webo = Function.InvokeAfter(()=>Web.Contents("https://api.vk.com/method/ads.get" & method, [Query = gett,  ManualStatusHandling = {404, 400}]),#duration(0,0,0,0.2)),
 results = Json.Document(webo),
 responses = results[response],
@@ -96,7 +96,7 @@ in  try results[error] otherwise expAnd;
 campaignNames = (account as text, client as nullable text )=>
 let
 got = if client =null then [] else [#"client_id"=client], 
-get = [#"account_id"=account,  #"access_token"=Extension.CurrentCredential()[Key], #"v"="5.107"]&got,
+get = [#"account_id"=account,  #"access_token"=Extension.CurrentCredential()[Key], #"v"="5.130"]&got,
 web = Function.InvokeAfter(()=> Web.Contents("https://api.vk.com/method/ads.getCampaigns", [Query = get,  ManualStatusHandling = {404, 400}]),#duration(0,0,0,0.2)),
 result = Json.Document(web),
 response = result[response],
@@ -110,7 +110,7 @@ in rename;
 adNames = (account as text, client as nullable text)=>
 let
 got = if client =null then [] else [#"client_id"=client], 
-get = [#"account_id"=account,  #"access_token"=Extension.CurrentCredential()[Key], #"v"="5.107"]&got,
+get = [#"account_id"=account,  #"access_token"=Extension.CurrentCredential()[Key], #"v"="5.130"]&got,
 web = Function.InvokeAfter(()=> Web.Contents("https://api.vk.com/method/ads.getAds", [Query = get,  ManualStatusHandling = {404, 400}]),#duration(0,0,0,0.3)),
 result = Json.Document(web),
 response = result[response],
@@ -129,7 +129,7 @@ getData = (objectList as text, account as text, reportType as text, start as tex
 let
 method = if reportType = "campaigns" then "Campaigns" else if reportType = "ads" then "Ads" else "",
 get = [#"account_id"=account, #"ids_type"=Text.BeforeDelimiter(Text.Lower(method),"s"), 
-#"access_token"=Extension.CurrentCredential()[Key], #"v"="5.107", #"ids"=objectList, #"period"="day", #"date_from"=dateFunc(start), #"date_to"=dateFunc(end)],
+#"access_token"=Extension.CurrentCredential()[Key], #"v"="5.130", #"ids"=objectList, #"period"="day", #"date_from"=dateFunc(start), #"date_to"=dateFunc(end)],
 web = Function.InvokeAfter(()=>Web.Contents("https://api.vk.com/method/ads.getStatistics", [Query = get,  ManualStatusHandling = {404, 400}]),#duration(0,0,0,0.3)),
 result = Json.Document(web),
 response = result[response],
