@@ -96,7 +96,7 @@ in  try results[error] otherwise expAnd;
 campaignNames = (account as text, client as nullable text )=>
 let
 got = if client =null then [] else [#"client_id"=client], 
-get = [#"account_id"=account,  #"access_token"=Extension.CurrentCredential()[Key], #"v"="5.130"]&got,
+get = [#"account_id"=account,  #"access_token"=Extension.CurrentCredential()[Key], #"v"="5.130",  #"include_deleted" = "1" ] & got,
 web = Function.InvokeAfter(()=> Web.Contents("https://api.vk.com/method/ads.getCampaigns", [Query = get,  ManualStatusHandling = {404, 400}]),#duration(0,0,0,0.2)),
 result = Json.Document(web),
 response = result[response],
@@ -110,7 +110,7 @@ in rename;
 adNames = (account as text, client as nullable text)=>
 let
 got = if client =null then [] else [#"client_id"=client], 
-get = [#"account_id"=account,  #"access_token"=Extension.CurrentCredential()[Key], #"v"="5.130"]&got,
+get = [#"account_id"=account,  #"access_token"=Extension.CurrentCredential()[Key], #"v"="5.130", #"include_deleted" = "1" ] & got,
 web = Function.InvokeAfter(()=> Web.Contents("https://api.vk.com/method/ads.getAds", [Query = get,  ManualStatusHandling = {404, 400}]),#duration(0,0,0,0.3)),
 result = Json.Document(web),
 response = result[response],
