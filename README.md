@@ -27,7 +27,7 @@
 ### Полезные ссылки:
 Подробное видео по использованию коннектора: https://youtu.be/OkmRXuMDlbw
 
-Получение токена: https://oauth.vk.com/authorize?client_id=51396697&display=page&redirect_uri=https://oauth.vk.com/blank.html&scope=ads,offline&response_type=token&v=5.130&state=123456
+Получение токена: https://oauth.vk.com/authorize?client_id=51396697&display=page&redirect_uri=https://oauth.vk.com/blank.html&scope=ads,offline,wall&response_type=token&v=5.130&state=123456
 
 Создание приложения: https://vk.com/editapp?act=create (нужно выбирать standalone)
 
