@@ -1,0 +1,49 @@
+let
+    Источник = (group_name as  text, group_id as text, token as text)=>
+let
+
+    getData=(group_id as text, token as text, offset as text)=>
+    let
+        headers=[],
+        querydata = [#"access_token" = token, #"v" = "5.130", #"owner_id" = group_id , #"count" = "100", offset = offset],
+        web = Web.Contents("https://api.vk.com/method/wall.get", [Headers = headers, ManualStatusHandling = {404, 400}, Query =querydata]),
+        result = Json.Document(web),
+        response = result[response],
+        items = response[items],
+        #"Преобразовано в таблицу" = Table.FromList(items, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+        #"Развернутый элемент Column1" = Table.ExpandRecordColumn(#"Преобразовано в таблицу", "Column1", {"can_edit", "created_by", "can_delete", "can_pin", "donut", "comments", "marked_as_ads", "short_text_rate", "hash", "postponed_id", "type", "attachments", "date", "from_id", "id", "is_favorite", "likes", "owner_id", "post_source", "post_type", "reposts", "text", "views"}, {"can_edit", "created_by", "can_delete", "can_pin", "donut", "comments", "marked_as_ads", "short_text_rate", "hash", "postponed_id", "type", "attachments", "date", "from_id", "id", "is_favorite", "likes", "owner_id", "post_source", "post_type", "reposts", "text", "views"}),
+        #"Другие удаленные столбцы" = Table.SelectColumns(#"Развернутый элемент Column1",{"comments", "date", "id", "likes", "reposts", "views", "text"}),
+        #"Развернутый элемент comments" = Table.ExpandRecordColumn(#"Другие удаленные столбцы", "comments", {"count"}, {"comments"}),
+        #"Развернутый элемент likes" = Table.ExpandRecordColumn(#"Развернутый элемент comments", "likes", {"count"}, {"likes"}),
+        #"Развернутый элемент reposts" = Table.ExpandRecordColumn(#"Развернутый элемент likes", "reposts", {"count"}, {"reposts"}),
+        #"Развернутый элемент views" = Table.ExpandRecordColumn(#"Развернутый элемент reposts", "views", {"count"}, {"views"}),
+        #"Добавлен пользовательский объект" = Table.AddColumn(#"Развернутый элемент views", "Дата", each  #datetime(1970, 1, 1, 0, 0, 0) + #duration(0, 0, 0, [date])),
+        #"Удаленные столбцы" = Table.RemoveColumns(#"Добавлен пользовательский объект",{"date"}),
+        #"Переименованные столбцы" = Table.RenameColumns(#"Удаленные столбцы",{{"Дата", "date"}}),
+        #"Измененный тип" = Table.TransformColumnTypes(#"Переименованные столбцы",{{"date", type datetime}, {"views", Int64.Type}, {"reposts", Int64.Type}, {"likes", Int64.Type}, {"id", Int64.Type}, {"comments", Int64.Type}}),
+        #"Измененный тип1" = Table.TransformColumnTypes(#"Измененный тип",{{"date", type date},{"text", type text}})
+    in
+        #"Измененный тип1",
+
+
+    getCount = (group_id as text, token as text)=>
+    let
+        headers=[],
+        querydata = [#"access_token" = token, #"v" = "5.130", #"owner_id" = group_id,  #"count" = "100", offset = "100"],
+        web = Web.Contents("https://api.vk.com/method/wall.get", [Headers = headers, ManualStatusHandling = {404, 400}, Query =querydata]),
+        result = Json.Document(web),
+        response = result[response],
+        count = response[count]
+    in
+        count,
+
+
+    offsetList = (rows,limit)=>
+    List.Accumulate({0..Number.RoundDown(rows/limit-0.0000000001)}, {}, (state, current)=>state&{current*limit} ),
+    offsets = offsetList(getCount(group_id,token),100),
+    data = List.Accumulate(offsets,#table({}, {}), (st,cr)=> st & getData(group_id, token, Text.From(cr))),
+    add = Table.AddColumn(data, "url", each "https://vk.com/" & group_name & "?w=wall" & group_id &"_" & Text.From([id]), type text)
+in
+    add
+in
+    Источник
