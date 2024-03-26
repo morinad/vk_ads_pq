@@ -2,6 +2,8 @@
 
 ### Новые видео, статьи и полезности в Telegram-канале: https://t.me/+2kqVrjV5aXs0NTRi
 
+Коннектор к VK-рекламе (бывший mytarget) тут: https://github.com/morinad/mytarget_pq
+
 ### Все коннекторы и поддержка:
 В рамках подписки "ПРО" на Boosty https://boosty.to/morinad вы получите:
 1) Все коннекторы mez для Power BI. 
